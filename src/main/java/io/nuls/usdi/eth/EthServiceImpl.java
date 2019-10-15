@@ -5,14 +5,16 @@ import org.slf4j.LoggerFactory;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.core.DefaultBlockParameter;
 import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.methods.response.EthBlock;
+import org.web3j.protocol.core.methods.response.EthTransaction;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.web3j.protocol.exceptions.TransactionException;
 import org.web3j.tx.Transfer;
 import org.web3j.utils.Convert;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.List;
 
 import static io.nuls.usdi.eth.Bootstrap.web3j;
 
@@ -45,4 +47,40 @@ public class EthServiceImpl implements EthService {
                 .send();
         log.info("Transaction complete, view it at https://rinkeby.etherscan.io/tx/" + transferReceipt.getTransactionHash());
     }
+
+    @Override
+    public BigInteger latestHeight() throws IOException {
+        return web3j.ethBlockNumber().send().getBlockNumber();
+    }
+
+    @Override
+    public EthBlock.Block getBlockByHash(String blockHash, boolean returnFullTransactionObjects) throws IOException {
+        return web3j.ethGetBlockByHash(blockHash, returnFullTransactionObjects).send().getBlock();
+    }
+
+    @Override
+    public EthBlock.Block getBlockByHeight(BigInteger blockHeight, boolean returnFullTransactionObjects) throws IOException {
+        return web3j.ethGetBlockByNumber(DefaultBlockParameter.valueOf(blockHeight), returnFullTransactionObjects).send().getBlock();
+    }
+
+    @Override
+    public boolean sendTransaction() {
+        return false;
+    }
+
+    @Override
+    public String signMessage() {
+        return null;
+    }
+
+    @Override
+    public EthTransaction getTransactionByHash() {
+        return null;
+    }
+
+    @Override
+    public List<String> getAccounts() throws IOException {
+        return web3j.ethAccounts().send().getAccounts();
+    }
+
 }

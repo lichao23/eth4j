@@ -13,6 +13,7 @@ import org.web3j.protocol.core.methods.response.EthGetBalance;
 import org.web3j.protocol.http.HttpService;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 /**
  * 启动类
@@ -27,8 +28,9 @@ public class Bootstrap {
 
     private static String clientVersion = null;
     public static Web3j web3j = null;
-    private static ConnectType type = ConnectType.TESTNET_ONLINE;
+    private static ConnectType type = ConnectType.TESTNET_LOCAL;
     private static EthService ethService = new EthServiceImpl();
+    private static Credentials credentials = null;
 
 
     public static void main(String[] args) {
@@ -42,13 +44,17 @@ public class Bootstrap {
     }
 
     private static void test() {
-
+        try {
+            ethService.transferToAccount(credentials, "0x5060818a8c48364830bCBd097683aBEe54f89b28", BigDecimal.ONE);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private static void loadWalletFile() throws IOException, CipherException {
         // We then need to load our Ethereum wallet file
         // FIXME: Generate a new wallet file using the web3j command line tools https://docs.web3j.io/command_line.html
-        Credentials credentials = WalletUtils.loadCredentials("nuls123456", "E:\\eth_wallet\\UTC--2019-10-10T06-02-51.851307500Z--b4fc4b845c5377acbafcf28b934083c3856455b3.json");
+        credentials = WalletUtils.loadCredentials("nuls123456", "E:\\eth_wallet\\UTC--2019-10-10T06-02-51.851307500Z--b4fc4b845c5377acbafcf28b934083c3856455b3.json");
         log.info("Credentials loaded");
         log.info("Address:" + credentials.getAddress());
         log.info("Balance:" + ethService.getBalance(credentials.getAddress()));
